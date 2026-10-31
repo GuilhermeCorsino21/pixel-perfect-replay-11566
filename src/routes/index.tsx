@@ -28,7 +28,7 @@ function Index() {
   useEffect(() => {
     const now = new Date();
     setHello(greeting(now.getHours()));
-    setToday(formatDate(now));
+    setToday(formatDate(now).replace(/^./, (c) => c.toUpperCase()));
     getTodayMessage(now).then(setMsg);
   }, []);
 
@@ -38,7 +38,7 @@ function Index() {
         <div className="animate-rise text-center">
           <Branch className="mx-auto h-9 w-36 text-sand" />
           <p className="mt-5 font-serif text-xl italic text-foreground/80 md:text-2xl">{hello}, que bom ter você aqui.</p>
-          <p className="mt-1.5 min-h-5 text-xs capitalize tracking-wide text-muted-foreground">{today}</p>
+          <p className="mt-1.5 min-h-5 text-xs tracking-wide text-muted-foreground">{today}</p>
           <div className="mx-auto mt-12 flex max-w-[14rem] items-center gap-3 md:mt-16">
             <span className="h-px flex-1 bg-sand/60" />
             <p className="eyebrow text-primary">Palavra do dia</p>
