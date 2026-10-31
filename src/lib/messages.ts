@@ -122,7 +122,7 @@ const dayIndex = (d: Date) =>
 export type DatedMessage = Message & { date: string };
 
 function messageFor(d: Date): DatedMessage {
-  const m = MESSAGES[((dayIndex(d) % MESSAGES.length) + MESSAGES.length) % MESSAGES.length];
+  const m: Message = MESSAGES[((dayIndex(d) % MESSAGES.length) + MESSAGES.length) % MESSAGES.length]!;
   return { ...m, date: new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString() };
 }
 
