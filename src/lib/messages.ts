@@ -23,7 +23,7 @@ const MESSAGES: Message[] = [
     translation: ARA,
     reflection: [
       "Nem sempre nos sentimos fortes. Há dias em que a fé parece pequena, quase invisível. Jesus escolhe justamente a menor das sementes para falar sobre ela.",
-      "A força não está no tamanho do que carregamos, mas em onde ela está plantada. Uma confiança pequena, mas verdadeira, já é suficiente para começar a mover o que parecia imóvel.",
+      "Jesus falava aos discípulos que não haviam conseguido ajudar um menino. A lição não é sobre o tamanho da nossa fé, mas sobre em quem ela se apoia. Uma confiança pequena, voltada para Deus, já é um começo verdadeiro.",
     ],
     takeaway: "Qual é um pequeno passo de confiança que você pode dar hoje, mesmo sem ter todas as respostas?",
   },
@@ -72,8 +72,8 @@ const MESSAGES: Message[] = [
     reference: "Isaías 41:10",
     translation: ARA,
     reflection: [
-      "O medo é humano, e o texto não o ignora. Em vez de pedir coragem, ele oferece presença: “eu sou contigo”.",
-      "Coragem, muitas vezes, nasce de saber que não estamos sozinhos.",
+      "Estas palavras foram dirigidas ao povo de Israel num tempo de incerteza. O texto não ignora o medo; em vez de exigir coragem, oferece presença: “eu sou contigo”.",
+      "Lidas hoje, não prometem ausência de dificuldades, mas lembram que a fé encontra firmeza na companhia de Deus, e não em nossa própria força.",
     ],
     takeaway: "Diante de uma preocupação de hoje, repita para si: não estou sozinho nisto.",
   },

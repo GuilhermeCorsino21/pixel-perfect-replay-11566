@@ -79,3 +79,10 @@
 
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @utility animate-rise { animation: rise 0.9s cubic-bezier(.2,.7,.2,1) both; }
+
+:root { --keep: oklch(0.925 0.025 140); }
+@theme inline { --color-keep: var(--keep); }
+@utility reading {
+  hanging-punctuation: first;
+  & > p + p { text-indent: 1.5em; }
+}
