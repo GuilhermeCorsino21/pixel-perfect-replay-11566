@@ -1,24 +1,54 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Branch, Layout, MessageBody, ShareButton } from "@/components/site";
+import { formatDate, getTodayMessage, type DatedMessage } from "@/lib/messages";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Semente — Palavra do dia" },
+      { name: "description", content: "Uma mensagem bíblica por dia, com reflexão acolhedora e aplicação prática para a vida." },
+      { property: "og:title", content: "Semente — Palavra do dia" },
+      { property: "og:description", content: "Pequenas palavras. Grandes transformações." },
+    ],
+  }),
+  loader: () => getTodayMessage(),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+function greeting(h: number) {
+  return h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
+}
+
 function Index() {
+  const initial = Route.useLoaderData();
+  const [msg, setMsg] = useState<DatedMessage>(initial);
+  const [hello, setHello] = useState("Olá");
+  const [today, setToday] = useState("");
+  useEffect(() => {
+    const now = new Date();
+    setHello(greeting(now.getHours()));
+    setToday(formatDate(now));
+    getTodayMessage(now).then(setMsg);
+  }, []);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <Layout>
+      <article className="mx-auto max-w-3xl px-6 pt-8 md:pt-14">
+        <div className="animate-rise text-center">
+          <Branch className="mx-auto h-10 w-40 text-sand" />
+          <p className="mt-4 font-serif text-2xl italic text-primary">{hello}, que bom ter você aqui.</p>
+          <p className="mt-1 min-h-5 text-sm capitalize text-muted-foreground">{today}</p>
+          <p className="eyebrow mt-12 text-sand">Palavra do dia</p>
+        </div>
+        <div className="animate-rise [animation-delay:150ms]">
+          <MessageBody message={msg} />
+          <div className="mt-14 flex flex-col items-center gap-5">
+            <ShareButton message={msg} />
+            <Link to="/mensagens" className="text-sm text-primary underline-offset-4 hover:underline">Ver mensagens anteriores →</Link>
+          </div>
+        </div>
+      </article>
+    </Layout>
   );
 }
