@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Branch, Layout, MessageBody, ShareButton } from "@/components/site";
 import { formatDate, getTodayMessage, type DatedMessage } from "@/lib/messages";
+import { ShareImageModal } from "@/components/ShareImageModal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -84,6 +85,67 @@ function Index() {
           </div>
         </div>
       </article>
+    </Layout>
+  );
+}
+function Index() {
+  const initial = Route.useLoaderData();
+  const [msg, setMsg] = useState<DatedMessage>(initial);
+  const [hello, setHello] = useState("Olá");
+  const [today, setToday] = useState("");
+
+  // 1. Adicione o estado para controlar a abertura do modal
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  useEffect(() => {
+    const now = new Date();
+    setHello(greeting(now.getHours()));
+    setToday(formatDate(now).replace(/^./, (c) => c.toUpperCase()));
+    getTodayMessage(now).then(setMsg);
+  }, []);
+
+  return (
+    <Layout>
+      <article className="mx-auto max-w-3xl px-5 pt-6 sm:px-6 md:pt-12">
+        <div className="animate-rise text-center">
+          <Branch className="mx-auto h-9 w-36 text-sand" />
+          <p className="mt-5 font-serif text-xl italic text-foreground/80 md:text-2xl">
+            {hello}, que bom ter você aqui.
+          </p>
+          <p className="mt-1.5 min-h-5 text-xs tracking-wide text-muted-foreground">{today}</p>
+          <div className="mx-auto mt-12 flex max-w-[14rem] items-center gap-3 md:mt-16">
+            <span className="h-px flex-1 bg-sand/60" />
+            <p className="eyebrow text-primary">Palavra do dia</p>
+            <span className="h-px flex-1 bg-sand/60" />
+          </div>
+        </div>
+        <div className="animate-rise [animation-delay:150ms]">
+          <MessageBody message={msg} />
+          <div className="mt-14 flex flex-col items-center gap-6">
+            {/* O botão atual ou um novo botão que abre o modal */}
+            <button
+              onClick={() => setIsShareModalOpen(true)}
+              className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-md transition-all hover:scale-105"
+            >
+              Criar Imagem para Partilhar
+            </button>
+
+            <Link
+              to="/mensagens"
+              className="text-sm text-primary underline-offset-4 hover:underline"
+            >
+              Ver mensagens anteriores →
+            </Link>
+          </div>
+        </div>
+      </article>
+
+      {/* 2. O modal entra aqui, logo antes de fechar o Layout */}
+      <ShareImageModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        message={msg}
+      />
     </Layout>
   );
 }
