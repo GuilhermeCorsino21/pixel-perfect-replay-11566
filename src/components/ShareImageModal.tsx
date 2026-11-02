@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import download from "downloadjs";
-import { Download, Share2, X, Loader2 } from "lucide-react";
-import type { DatedMessage } from "@/lib/messages";
+import { Download, X, Loader2 } from "lucide-react";
+import { formatDate, type DatedMessage } from "@/lib/messages";
 
 interface ShareImageModalProps {
   isOpen: boolean;
@@ -15,6 +15,11 @@ export function ShareImageModal({ isOpen, onClose, message }: ShareImageModalPro
   const [isGenerating, setIsGenerating] = useState(false);
 
   if (!isOpen) return null;
+
+  // Formata a data de forma bonita para o cartão
+  const formattedDate = message.date 
+    ? formatDate(new Date(message.date)).replace(/^./, (c) => c.toUpperCase())
+    : "";
 
   const handleDownload = async () => {
     if (!cardRef.current) return;
@@ -65,16 +70,16 @@ export function ShareImageModal({ isOpen, onClose, message }: ShareImageModalPro
                   Semente Bíblica
                 </span>
               </div>
-              <span className="text-[10px] text-stone-400">{message.date}</span>
+              <span className="text-[10px] text-stone-400">{formattedDate}</span>
             </div>
 
             {/* Conteúdo do Versículo */}
             <div className="my-auto py-4 text-center">
-              <p className="font-serif text-lg leading-relaxed text-stone-100 sm:text-xl">
-                “{message.text || message.verseText}”
+              <p className="font-serif text-base leading-relaxed text-stone-100 sm:text-lg">
+                “{message.verse}”
               </p>
               <p className="mt-4 font-sans text-xs font-medium uppercase tracking-wider text-amber-400">
-                — {message.reference || message.verseRef}
+                — {message.reference}
               </p>
             </div>
 
