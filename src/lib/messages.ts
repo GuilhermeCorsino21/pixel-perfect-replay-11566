@@ -1,147 +1,98 @@
-// Fonte de dados das mensagens. Hoje usa conteúdo local de demonstração;
-// a interface assíncrona permite trocar por uma consulta ao banco depois.
+// Fonte de dados externa carregada via JSON de forma dinâmica.
+// Nada fica hardcoded na lógica do código.
 
 export type Message = {
   id: string;
   title: string;
-  verse: string; // texto bíblico literal
+  verse: string;
   reference: string;
   translation: string;
-  reflection: string[]; // texto autoral
+  reflection: string[];
   takeaway: string;
 };
 
-const ARA = "Almeida Revista e Atualizada (ARA)";
+export type DatedMessage = Message & { date: string };
 
-const MESSAGES: Message[] = [
-  {
-    id: "fe-do-tamanho-de-uma-semente",
-    title: "Fé do tamanho de uma semente",
-    verse:
-      "Se tiverdes fé como um grão de mostarda, direis a este monte: Passa daqui para acolá, e ele passará.",
-    reference: "Mateus 17:20",
-    translation: ARA,
-    reflection: [
-      "Nem sempre nos sentimos fortes. Há dias em que a fé parece pequena, quase invisível. Jesus escolhe justamente a menor das sementes para falar sobre ela.",
-      "Jesus falava aos discípulos que não haviam conseguido ajudar um menino. A lição não é sobre o tamanho da nossa fé, mas sobre em quem ela se apoia. Uma confiança pequena, voltada para Deus, já é um começo verdadeiro.",
-    ],
-    takeaway: "Qual é um pequeno passo de confiança que você pode dar hoje, mesmo sem ter todas as respostas?",
-  },
-  {
-    id: "descanso-para-os-cansados",
-    title: "Descanso para os cansados",
-    verse: "Vinde a mim, todos os que estais cansados e sobrecarregados, e eu vos aliviarei.",
-    reference: "Mateus 11:28",
-    translation: ARA,
-    reflection: [
-      "O convite não exige que estejamos prontos, organizados ou bem. Ele é feito exatamente a quem está cansado.",
-      "Às vezes, descansar é um ato de fé: reconhecer que não precisamos sustentar tudo sozinhos.",
-    ],
-    takeaway: "Reserve cinco minutos de silêncio hoje e entregue, em pensamento, aquilo que mais pesa.",
-  },
-  {
-    id: "misericordias-que-se-renovam",
-    title: "Misericórdias que se renovam",
-    verse:
-      "As misericórdias do Senhor são a causa de não sermos consumidos, porque as suas misericórdias não têm fim; renovam-se cada manhã. Grande é a tua fidelidade.",
-    reference: "Lamentações 3:22-23",
-    translation: ARA,
-    reflection: [
-      "Estas palavras foram escritas em meio à dor, não depois dela. Ainda assim, o autor encontra algo firme: cada manhã traz uma nova oportunidade.",
-      "Ontem não precisa definir hoje. Há graça suficiente para recomeçar.",
-    ],
-    takeaway: "O que você pode deixar no dia de ontem para viver o de hoje com mais leveza?",
-  },
-  {
-    id: "o-senhor-e-o-meu-pastor",
-    title: "Cuidado que não falta",
-    verse: "O Senhor é o meu pastor; nada me faltará.",
-    reference: "Salmos 23:1",
-    translation: ARA,
-    reflection: [
-      "Um pastor conhece suas ovelhas, guia, protege e caminha junto. O salmista não descreve uma vida sem vales, mas uma vida acompanhada.",
-      "Confiar no cuidado de Deus muda o modo como olhamos para o que ainda não temos.",
-    ],
-    takeaway: "Anote três coisas que, hoje, não faltaram para você.",
-  },
-  {
-    id: "nao-temas",
-    title: "Não temas",
-    verse:
-      "Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça.",
-    reference: "Isaías 41:10",
-    translation: ARA,
-    reflection: [
-      "Estas palavras foram dirigidas ao povo de Israel num tempo de incerteza. O texto não ignora o medo; em vez de exigir coragem, oferece presença: “eu sou contigo”.",
-      "Lidas hoje, não prometem ausência de dificuldades, mas lembram que a fé encontra firmeza na companhia de Deus, e não em nossa própria força.",
-    ],
-    takeaway: "Diante de uma preocupação de hoje, repita para si: não estou sozinho nisto.",
-  },
-  {
-    id: "aquietai-vos",
-    title: "Aquietar o coração",
-    verse: "Aquietai-vos e sabei que eu sou Deus.",
-    reference: "Salmos 46:10",
-    translation: ARA,
-    reflection: [
-      "Vivemos cercados de ruído e urgência. Este verso nos convida a parar — não por desistência, mas por confiança.",
-      "No silêncio, lembramos que nem tudo depende de nós.",
-    ],
-    takeaway: "Desligue as notificações por alguns minutos e apenas respire.",
-  },
-  {
-    id: "o-amor-e-paciente",
-    title: "O amor é paciente",
-    verse: "O amor é paciente, é benigno; o amor não arde em ciúmes, não se ufana, não se ensoberbece.",
-    reference: "1 Coríntios 13:4",
-    translation: ARA,
-    reflection: [
-      "Antes de ser um sentimento, o amor aqui é descrito como uma forma de agir. Paciência e bondade são escolhas diárias.",
-      "Pequenos gestos de gentileza também são grandes demonstrações de amor.",
-    ],
-    takeaway: "Com quem você pode ser um pouco mais paciente hoje?",
-  },
-  {
-    id: "pacificadores",
-    title: "Semear a paz",
-    verse: "Bem-aventurados os pacificadores, porque serão chamados filhos de Deus.",
-    reference: "Mateus 5:9",
-    translation: ARA,
-    reflection: [
-      "Jesus não fala apenas de quem ama a paz, mas de quem a constrói. Paz é algo que se faz.",
-      "Uma palavra mansa, um pedido de desculpas, uma escuta atenta — tudo isso é semear.",
-    ],
-    takeaway: "Existe alguma conversa que você pode conduzir com mais paz hoje?",
-  },
-];
+// Função responsável por buscar os dados do arquivo JSON externo
+async function fetchMessagesData(): Promise<{
+  translation: string;
+  messages: Omit<Message, "translation">[];
+}> {
+  try {
+    const response = await fetch("/messages.json");
+    if (!response.ok) throw new Error("Erro ao carregar mensagens");
+    return await response.json();
+  } catch (error) {
+    console.error("Erro no carregamento do arquivo JSON de mensagens:", error);
+    // Fallback de segurança caso ocorra alguma falha na requisição
+    return {
+      translation: "Almeida Revista e Atualizada (ARA)",
+      messages: [],
+    };
+  }
+}
 
 const DAY = 86_400_000;
 const dayIndex = (d: Date) =>
   Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY);
 
-export type DatedMessage = Message & { date: string };
+async function messageFor(d: Date): Promise<DatedMessage> {
+  const data = await fetchMessagesData();
+  const list = data.messages;
 
-function messageFor(d: Date): DatedMessage {
-  const m: Message = MESSAGES[((dayIndex(d) % MESSAGES.length) + MESSAGES.length) % MESSAGES.length]!;
-  return { ...m, date: new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString() };
+  // Trata o cenário de fallback se a lista no JSON estiver vazia
+  if (!list || list.length === 0) {
+    return {
+      id: "fallback",
+      title: "Semente do Dia",
+      verse: "O Senhor é o meu pastor; nada me faltará.",
+      reference: "Salmos 23:1",
+      translation: data.translation || "Almeida Revista e Atualizada (ARA)",
+      reflection: ["Há sempre uma nova graça para cada amanhecer."],
+      takeaway: "Confie no dia de hoje.",
+      date: new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString(),
+    };
+  }
+
+  // Calcula a rotação diária ciclicamente com base no total de mensagens disponíveis no JSON
+  const index = ((dayIndex(d) % list.length) + list.length) % list.length;
+  const m = list[index]!;
+
+  return {
+    ...m,
+    translation: data.translation,
+    date: new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString(),
+  };
 }
 
 export async function getTodayMessage(now = new Date()): Promise<DatedMessage> {
   return messageFor(now);
 }
 
+// Histórico de mensagens anteriores limitado estritamente aos últimos 7 dias
 export async function getPastMessages(now = new Date()): Promise<DatedMessage[]> {
-  return Array.from({ length: MESSAGES.length - 1 }, (_, i) =>
-    messageFor(new Date(now.getFullYear(), now.getMonth(), now.getDate() - (i + 1))),
-  );
+  const promises = Array.from({ length: 7 }, (_, i) => {
+    const pastDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (i + 1));
+    return messageFor(pastDate);
+  });
+
+  return Promise.all(promises);
 }
 
 export async function getMessageById(id: string): Promise<Message | undefined> {
-  return MESSAGES.find((m) => m.id === id);
+  const data = await fetchMessagesData();
+  const found = data.messages?.find((m) => m.id === id);
+  if (!found) return undefined;
+  return { ...found, translation: data.translation };
 }
 
 export const formatDate = (iso: string | Date) =>
-  new Date(iso).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  new Date(iso).toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
 export const shareText = (m: Message) =>
-  `${m.title}\n\n“${m.verse}”\n— ${m.reference} (${m.translation})\n\nLeve com você hoje: ${m.takeaway}\n\nSemente · Pequenas palavras. Grandes transformações.`;
+  `${m.title}\n\n“${m.verse}”\n— ${m.reference} (${m.translation})\n\nLeve com você hoje: ${m.takeaway}\n\nSemente Bíblica · Pequenas palavras. Grandes transformações. (https://sementebiblica.com.br)`;
